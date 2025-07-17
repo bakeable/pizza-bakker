@@ -43,8 +43,14 @@ export async function POST(request: NextRequest) {
       status: "success",
       data: order,
     });
-  } catch (error) {
-    console.error("Error creating order:", error);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
+    console.error("Error creating order:", {
+      message: error.message,
+      stack: error.stack,
+      code: error.code,
+      error,
+    });
     return NextResponse.json(
       { status: "error", error: `Failed to create order: ${error}` },
       { status: 500 }

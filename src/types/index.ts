@@ -13,6 +13,7 @@ import {
   PizzaPreset,
   Drink,
 } from "./food";
+import { WeatherData } from "./weather";
 
 export type {
   OrderItemRequest,
@@ -26,4 +27,5 @@ export type {
   PizzaPreset,
   Drink,
   Response,
+  WeatherData,
 };

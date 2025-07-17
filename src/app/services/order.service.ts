@@ -1,4 +1,5 @@
 import db from "@/lib/database";
+import { getCurrentWeather } from "@/lib/weather";
 import {
   Drink,
   OrderItem,
@@ -111,16 +112,41 @@ export const priceItems = (items: OrderItemRequest[]) => {
 //////////////////////////////////////////////////////////////////////
 ///////////////////// Order Totals Calculation ///////////////////////
 //////////////////////////////////////////////////////////////////////
-const applySpecialDiscount = (items: OrderItem[]) => {
-  return items;
+const applySpecialDiscount = async (items: OrderItem[]) => {
+  // Apply weather discount
+  // Get pineapple topping ID
+  const pineappleToppingId = db
+    .prepare("SELECT id FROM toppings WHERE name = 'Pineapple'")
+    .get() as PizzaTopping | undefined;
+
+  // Get current weather
+  const currentWeather = await getCurrentWeather();
+  if (!pineappleToppingId || !currentWeather) {
+    return items; // No discount if no pineapple topping or weather data
+  }
+
+  if (currentWeather.temperature <= 30) {
+    return items; // No discount if temperature is 30°C or below
+  }
+
+  return items.map((item) => {
+    const discount = item.toppings.includes(pineappleToppingId.id)
+      ? item.price * 0.1
+      : 0;
+    return {
+      ...item,
+      discount: discount,
+      price: item.price - discount,
+    };
+  });
 };
 
-export const calculateOrderTotals = (
+export const calculateOrderTotals = async (
   items: OrderItem[],
   couponDiscount?: number
 ) => {
   // Add weather discount logic here if needed
-  const discountedItems = applySpecialDiscount(items);
+  const discountedItems = await applySpecialDiscount(items);
 
   // Get the total sum
   const total = discountedItems.reduce(

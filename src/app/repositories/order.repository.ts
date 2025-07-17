@@ -11,7 +11,7 @@ export const createOrder = async (
     items: finalItems,
     total,
     discount,
-  } = calculateOrderTotals(pricedItems, coupon?.discount_percentage);
+  } = await calculateOrderTotals(pricedItems, coupon?.discount_percentage);
 
   // Run all DB operations in a transaction for atomicity
   let orderId: number | undefined;

@@ -41,6 +41,17 @@ describe("Orders API - POST", () => {
     items: [validOrderItem],
   };
 
+  // Mock the weather API to return a temperature above 30°C for all tests
+  beforeAll(() => {
+    jest.spyOn(global, "fetch").mockResolvedValue({
+      json: () => Promise.resolve({ current_weather: { temperature: 20 } }),
+    } as Response);
+  });
+
+  afterAll(() => {
+    (global.fetch as jest.MockedFunction<typeof fetch>).mockRestore?.();
+  });
+
   beforeEach(() => {
     // Clean up test data before each test
     db.prepare("DELETE FROM order_item_toppings WHERE 1=1").run();
@@ -154,6 +165,63 @@ describe("Orders API - POST", () => {
 
       expect(res.status).toBe("success");
       expect(res.data.items[0].price).toBeGreaterThan(12.0);
+    });
+
+    test("should not get 10% discount for pineapple topping if temperature is below 30°C", async () => {
+      // Get pineaple topping ID
+      const pineappleToppingId = db
+        .prepare("SELECT id FROM toppings WHERE name = 'Pineapple'")
+        .get() as { id: number } | undefined;
+
+      if (!pineappleToppingId) {
+        throw new Error("Pineapple topping not found in database");
+      }
+
+      const orderWithPineapple: OrderRequest = {
+        customer_name: "Pineapple Lover",
+        items: [
+          {
+            ...validOrderItem,
+            toppings: [1, 2, 3, pineappleToppingId.id],
+          },
+        ],
+      };
+
+      const res = await runPostHandler(POST, orderWithPineapple);
+
+      expect(res.status).toBe("success");
+      expect(res.data.items[0].discount).toBeUndefined();
+    });
+
+    test("should get 10% discount for pineapple topping if temperature is above 30°C", async () => {
+      jest.spyOn(global, "fetch").mockResolvedValue({
+        json: () => Promise.resolve({ current_weather: { temperature: 35 } }),
+      } as Response);
+
+      // Get pineaple topping ID
+      const pineappleToppingId = db
+        .prepare("SELECT id FROM toppings WHERE name = 'Pineapple'")
+        .get() as { id: number } | undefined;
+
+      if (!pineappleToppingId) {
+        throw new Error("Pineapple topping not found in database");
+      }
+
+      const orderWithPineapple: OrderRequest = {
+        customer_name: "Pineapple Lover",
+        items: [
+          {
+            ...validOrderItem,
+            toppings: [1, 2, 3, pineappleToppingId.id],
+          },
+        ],
+      };
+
+      const res = await runPostHandler(POST, orderWithPineapple);
+
+      expect(res.status).toBe("success");
+      expect(res.data.items[0].discount).toBeGreaterThan(0);
+      expect(res.data.items[0].discount).toBe(res.data.items[0].price / 9);
     });
   });
 
