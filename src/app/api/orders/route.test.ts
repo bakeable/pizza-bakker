@@ -247,7 +247,7 @@ describe("Orders API - POST", () => {
       const res = await runPostHandler(POST, noCustomerRequest);
 
       expect(res.status).toBe("error");
-      expect(res.error).toContain("Failed to create order");
+      expect(res.error).toContain("Customer name is required");
     });
   });
 

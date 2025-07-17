@@ -9,11 +9,20 @@ export async function POST(request: NextRequest) {
     const body: OrderRequest = await request.json();
     const { customer_name, items, coupon_code } = body;
 
+    // Validate customer name
+    if (!customer_name || customer_name.trim() === "") {
+      return NextResponse.json(
+        { status: "error", error: "Customer name is required" },
+        { status: 400 }
+      );
+    }
+
     // Validate pizza toppings
     const validation = validateItems(items);
+    console.log("Validation result:", validation);
     if (!validation.valid) {
       return NextResponse.json(
-        { success: false, error: validation.error },
+        { status: "error", error: validation.error },
         { status: 400 }
       );
     }
@@ -37,7 +46,7 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     console.error("Error creating order:", error);
     return NextResponse.json(
-      { status: "error", error: "Failed to create order" },
+      { status: "error", error: `Failed to create order: ${error}` },
       { status: 500 }
     );
   }
