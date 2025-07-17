@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "init-db": "tsx src/app/lib/database.ts"
+    "init-db": "tsx src/app/lib/database.ts",
+    "test": "jest --config jest.config.js"
   },
   "dependencies": {
     "@mui/material": "^7.2.0",
@@ -25,13 +26,17 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4",
+    "@types/jest": "^30.0.0",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.4.1",
+    "jest": "^30.0.4",
     "prettier": "^3.6.2",
+    "supertest": "^7.1.3",
     "tailwindcss": "^4",
+    "ts-jest": "^29.4.0",
     "tsx": "^4.20.3",
     "typescript": "^5"
   }
