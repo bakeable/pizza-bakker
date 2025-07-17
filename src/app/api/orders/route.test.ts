@@ -221,7 +221,7 @@ describe("Orders API - POST", () => {
 
       expect(res.status).toBe("success");
       expect(res.data.items[0].discount).toBeGreaterThan(0);
-      expect(res.data.items[0].discount).toBe(res.data.items[0].price / 9);
+      expect(res.data.items[0].discount).toBe(res.data.items[0].price * 0.1);
     });
   });
 

@@ -1,5 +1,6 @@
 import { Response } from "./api";
 import {
+  OrderOverview,
   OrderItemRequest,
   OrderItem,
   OrderRequest,
@@ -16,6 +17,7 @@ import {
 import { WeatherData } from "./weather";
 
 export type {
+  OrderOverview,
   OrderItemRequest,
   OrderItem,
   OrderRequest,

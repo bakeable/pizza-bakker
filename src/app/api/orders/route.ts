@@ -2,7 +2,84 @@ import { NextRequest, NextResponse } from "next/server";
 import { OrderRequest } from "@/types";
 import { getCoupon } from "@/app/repositories/coupon.repository";
 import { createOrder } from "@/app/repositories/order.repository";
-import { validateItems, priceItems } from "@/app/services/order.service";
+import {
+  validateItems,
+  priceItems,
+  calculateOrderTotals,
+} from "@/app/services/order.service";
+
+export async function GET(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const orderDataParam = searchParams.get("orderData");
+
+    if (!orderDataParam) {
+      return NextResponse.json(
+        { status: "error", error: "Order data is required" },
+        { status: 400 }
+      );
+    }
+
+    let orderData: OrderRequest;
+    try {
+      orderData = JSON.parse(decodeURIComponent(orderDataParam));
+    } catch {
+      return NextResponse.json(
+        { status: "error", error: "Invalid order data format" },
+        { status: 400 }
+      );
+    }
+
+    const { customer_name, items, coupon_code } = orderData;
+
+    // Validate customer name
+    if (!customer_name || customer_name.trim() === "") {
+      return NextResponse.json(
+        { status: "error", error: "Customer name is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate pizza toppings
+    const validation = validateItems(items);
+    if (!validation.valid) {
+      return NextResponse.json(
+        { status: "error", error: validation.error },
+        { status: 400 }
+      );
+    }
+
+    // Calculate order item prices
+    const pricedItems = priceItems(items);
+
+    // Get coupon
+    const coupon = getCoupon(coupon_code);
+
+    // Get totals
+    const {
+      items: finalItems,
+      total,
+      discount,
+    } = await calculateOrderTotals(pricedItems, coupon?.discount_percentage);
+
+    return NextResponse.json({
+      status: "success",
+      data: {
+        customer_name,
+        items: finalItems,
+        total_price: total,
+        discount,
+        coupon_code: coupon?.code,
+      },
+    });
+  } catch (error: unknown) {
+    console.error("Error calculating order:", error);
+    return NextResponse.json(
+      { status: "error", error: "Failed to calculate order" },
+      { status: 500 }
+    );
+  }
+}
 
 export async function POST(request: NextRequest) {
   try {

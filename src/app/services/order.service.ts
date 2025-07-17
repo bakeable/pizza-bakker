@@ -136,7 +136,6 @@ const applySpecialDiscount = async (items: OrderItem[]) => {
     return {
       ...item,
       discount: discount,
-      price: item.price - discount,
     };
   });
 };
@@ -154,9 +153,22 @@ export const calculateOrderTotals = async (
     0
   );
 
-  // Apply coupon discount
-  const discountAmount = couponDiscount ? total * (couponDiscount / 100) : 0;
+  // Calculate item discounts
+  const itemDiscounts = discountedItems.reduce(
+    (sum: number, item: OrderItem) => sum + (item.discount || 0),
+    0
+  );
 
+  // Apply coupon discount
+  const couponDiscountAmount = couponDiscount
+    ? total * (couponDiscount / 100)
+    : 0;
+
+  const discountAmount = itemDiscounts + couponDiscountAmount;
+  console.log("Total before discount:", total);
+  console.log("Item discounts:", itemDiscounts);
+  console.log("Coupon discount:", couponDiscountAmount);
+  console.log("Total discount:", discountAmount);
   return {
     items: discountedItems,
     subtotal: total,

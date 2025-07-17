@@ -59,7 +59,8 @@ export function initializeDatabase() {
         CREATE TABLE IF NOT EXISTS coupons (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           code TEXT NOT NULL UNIQUE,
-          discount_percentage REAL NOT NULL
+          discount_percentage REAL NOT NULL,
+          used BOOLEAN NOT NULL DEFAULT 0
         )
     `);
 

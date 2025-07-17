@@ -1,4 +1,4 @@
-import { PizzaSize } from "./food";
+import { PizzaSize, PizzaTopping } from "./food";
 
 export interface Product {
   id: number;
@@ -27,7 +27,6 @@ export interface OrderRequest {
   items: OrderItemRequest[];
   coupon_code?: string;
 }
-
 export interface Order {
   id: number;
   customer_name: string;
@@ -42,4 +41,14 @@ export interface Coupon {
   id: number;
   code: string;
   discount_percentage: number;
+}
+
+export interface OrderOverview {
+  pizza_base_price: number;
+  free_toppings: PizzaTopping[];
+  paid_toppings: PizzaTopping[];
+  drink_price: number;
+  subtotal: number;
+  coupon_discount: number;
+  total: number;
 }
