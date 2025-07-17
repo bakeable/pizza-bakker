@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "init-db": "tsx src/app/lib/database.ts",
+    "init-db": "tsx src/lib/database.ts",
     "test": "jest --config jest.config.js"
   },
   "dependencies": {

@@ -10,7 +10,7 @@ const db = new Database(dbPath);
 export function initializeDatabase() {
   // Price
   db.exec(`
-        CREATE TABLE IF NOT EXISTS pizza_price (
+        CREATE TABLE IF NOT EXISTS pizza_prices (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           size TEXT CHECK(size IN ('small', 'medium', 'large')) NOT NULL,
           price REAL NOT NULL
@@ -87,7 +87,7 @@ export function initializeDatabase() {
           drink_id INTEGER,
           price REAL NOT NULL,
           quantity INTEGER NOT NULL,
-          discount REAL NOT NULL DEFAULT 0,
+          discount REAL DEFAULT 0,
           FOREIGN KEY (drink_id) REFERENCES drinks (id),
           FOREIGN KEY (order_id) REFERENCES orders (id),
           UNIQUE (order_id, id)
@@ -222,7 +222,7 @@ function insertDefaultData() {
 
   // Pizza prices
   const insertPrice = db.prepare(`
-    INSERT OR IGNORE INTO pizza_price (size, price) VALUES (?, ?)
+    INSERT OR IGNORE INTO pizza_prices (size, price) VALUES (?, ?)
   `);
 
   prices.forEach(([size, price]) => {

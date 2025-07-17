@@ -1,5 +1,3 @@
-import { OrderItem } from "./ecommerce";
-
 export type PizzaSize = "small" | "medium" | "large";
 
 export interface PizzaPrice {
@@ -24,10 +22,4 @@ export interface Drink {
   id: number;
   name: string;
   price: number;
-}
-
-export interface Pizza extends OrderItem {
-  size: PizzaSize;
-  toppings: number[];
-  drinks: Drink;
 }

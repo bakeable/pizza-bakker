@@ -1,5 +1,11 @@
 import { Response } from "./api";
-import { OrderItem, Order, Coupon } from "./ecommerce";
+import {
+  OrderItemRequest,
+  OrderItem,
+  OrderRequest,
+  Order,
+  Coupon,
+} from "./ecommerce";
 import {
   PizzaSize,
   PizzaPrice,
@@ -9,7 +15,9 @@ import {
 } from "./food";
 
 export type {
+  OrderItemRequest,
   OrderItem,
+  OrderRequest,
   Order,
   Coupon,
   PizzaSize,
